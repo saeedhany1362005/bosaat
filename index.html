@@ -45,14 +45,34 @@ h1 {
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 
-.piggy {
-    font-size: 90px;
-    line-height: 1;
+/* ===== الحصالة الكيوت ===== */
+.cute-bank {
+    width: 120px;
+    height: 90px;
+    background: linear-gradient(145deg, #ffd6e5, #ffb6d0);
+    border-radius: 50px 50px 40px 40px;
+    margin: 0 auto;
+    position: relative;
+    box-shadow: inset 0 -6px 0 rgba(0,0,0,0.05);
 }
 
+/* فتحة الحصالة */
+.cute-bank::before {
+    content: "";
+    width: 50px;
+    height: 6px;
+    background: #555;
+    border-radius: 3px;
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* إيموجي الشخص */
 .person-emoji {
     font-size: 34px;
-    margin-top: -25px;
+    margin-top: -20px;
 }
 
 .name {
@@ -89,13 +109,8 @@ button {
     font-size: 16px;
 }
 
-.btn-plus {
-    background-color: #4caf50;
-}
-
-.btn-minus {
-    background-color: #f44336;
-}
+.btn-plus { background-color: #4caf50; }
+.btn-minus { background-color: #f44336; }
 
 @keyframes shake {
     0% { transform: translateX(0); }
@@ -105,9 +120,7 @@ button {
     100% { transform: translateX(0); }
 }
 
-.shake {
-    animation: shake 0.4s;
-}
+.shake { animation: shake 0.4s; }
 
 #bg-emoji {
     position: fixed;
@@ -147,29 +160,29 @@ button {
 
 <div class="container">
 
-    <!-- وزتي -->
-    <div class="piggy-card" id="card-wzty">
-        <div class="piggy">🐷</div>
-        <div class="person-emoji">🎀</div>
-        <div class="name">وزتي</div>
-        <div class="count" id="wztyCount">0</div>
-        <div class="buttons">
-            <button class="btn-plus" onclick="updateCount('wzty', 1)">إيداع بوسة 💋</button>
-            <button class="btn-minus" onclick="updateCount('wzty', -1)">سحب بوسة 😢</button>
-        </div>
+<!-- وزتي -->
+<div class="piggy-card" id="card-wzty">
+    <div class="cute-bank"></div>
+    <div class="person-emoji">🦢</div>
+    <div class="name">وزتي</div>
+    <div class="count" id="wztyCount">0</div>
+    <div class="buttons">
+        <button class="btn-plus" onclick="updateCount('wzty', 1)">إيداع بوسة 💋</button>
+        <button class="btn-minus" onclick="updateCount('wzty', -1)">سحب بوسة 😢</button>
     </div>
+</div>
 
-    <!-- سعدوتي -->
-    <div class="piggy-card" id="card-sadoty">
-        <div class="piggy">🐷</div>
-        <div class="person-emoji">🧢</div>
-        <div class="name">سعدوتي</div>
-        <div class="count" id="sadotyCount">0</div>
-        <div class="buttons">
-            <button class="btn-plus" onclick="updateCount('sadoty', 1)">إيداع بوسة 💋</button>
-            <button class="btn-minus" onclick="updateCount('sadoty', -1)">سحب بوسة 😢</button>
-        </div>
+<!-- سعدوتي -->
+<div class="piggy-card" id="card-sadoty">
+    <div class="cute-bank"></div>
+    <div class="person-emoji">🦁</div>
+    <div class="name">سعدوتي</div>
+    <div class="count" id="sadotyCount">0</div>
+    <div class="buttons">
+        <button class="btn-plus" onclick="updateCount('sadoty', 1)">إيداع بوسة 💋</button>
+        <button class="btn-minus" onclick="updateCount('sadoty', -1)">سحب بوسة 😢</button>
     </div>
+</div>
 
 </div>
 
@@ -180,7 +193,6 @@ button {
 <audio id="errorSound" src="https://www.soundjay.com/human/sounds/sigh-01.mp3"></audio>
 
 <script>
-/* Firebase Config */
 const firebaseConfig = {
   apiKey: "AIzaSyBcowW6D82xeisiKInkElpjVj53m0SuW1g",
   authDomain: "bosaat-e2b8a.firebaseapp.com",
@@ -194,14 +206,12 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-/* Listen for realtime updates */
 db.ref("counts").on("value", snapshot => {
     const data = snapshot.val() || {};
-    document.getElementById("wztyCount").innerText = data.wzty || 0;
-    document.getElementById("sadotyCount").innerText = data.sadoty || 0;
+    wztyCount.innerText = data.wzty || 0;
+    sadotyCount.innerText = data.sadoty || 0;
 });
 
-/* Update count */
 function updateCount(person, val) {
     const card = document.getElementById("card-" + person);
     const history = document.getElementById("history");
@@ -209,37 +219,30 @@ function updateCount(person, val) {
 
     db.ref("counts/" + person).transaction(current => {
         current = current || 0;
-        const next = current + val;
-        return next < 0 ? 0 : next;
+        return Math.max(0, current + val);
     });
 
     if (val > 0) {
-        document.getElementById("popSound").play();
+        popSound.play();
         confetti({ particleCount: 80, spread: 70 });
         history.innerText = `آخر حركة: إيداع بوسة لـ ${name} 🥰`;
         showBg("💋", "#c8e6c9");
     } else {
-        const sadSound = document.getElementById("errorSound");
-        sadSound.volume = 0.4;
-        sadSound.play();
-
+        errorSound.volume = 0.4;
+        errorSound.play();
         card.classList.add("shake");
         setTimeout(() => card.classList.remove("shake"), 400);
-
         history.innerText = `آخر حركة: سحب بوسة من ${name} 😔`;
         showBg("😢", "#ffcdd2");
     }
 }
 
-/* Background effect */
 function showBg(emoji, color) {
-    const bg = document.getElementById("bg-emoji");
-    bg.innerText = emoji;
-    bg.classList.add("show");
+    bgEmoji.innerText = emoji;
+    bgEmoji.classList.add("show");
     document.body.style.background = color;
-
     setTimeout(() => {
-        bg.classList.remove("show");
+        bgEmoji.classList.remove("show");
         document.body.style.background = "#f8f9fa";
     }, 800);
 }
