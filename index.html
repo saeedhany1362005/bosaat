@@ -13,12 +13,13 @@
 
 body {
     font-family: Cairo, sans-serif;
-    background: #f8f9fa;
+    background: linear-gradient(#fff, #ffe6ee);
     text-align: center;
 }
 
 h1 {
     color: #d81b60;
+    margin-top: 30px;
 }
 
 .container {
@@ -32,76 +33,100 @@ h1 {
     background: white;
     border-radius: 30px;
     padding: 25px;
-    width: 260px;
-    box-shadow: 0 10px 25px rgba(0,0,0,.1);
+    width: 280px;
+    box-shadow: 0 15px 30px rgba(0,0,0,.12);
 }
 
 /* ===== الحصالة ===== */
 .bank-wrapper {
     position: relative;
-    height: 200px;
+    height: 240px;
 }
 
 .bank {
-    width: 160px;
-    height: 120px;
-    background: #ffccdd;
-    border-radius: 60px 60px 50px 50px;
+    width: 180px;
+    height: 160px;
+    background: #ffd1dc;
+    border-radius: 70px 70px 55px 55px;
     margin: 40px auto 0;
     position: relative;
+    overflow: hidden;
+    border: 4px solid #ff9ab5;
 }
 
-/* فتحة الحصالة */
+/* فتحة */
 .bank-slot {
     width: 60px;
     height: 8px;
-    background: #555;
+    background: #444;
     border-radius: 4px;
     position: absolute;
-    top: -10px;
+    top: -12px;
     left: 50%;
     transform: translateX(-50%);
+    z-index: 5;
 }
 
 /* إيموجي الشخص */
 .owner {
     position: absolute;
-    top: 55px;
+    top: 10px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 40px;
+    z-index: 6;
 }
 
-/* 💋 البوسة */
-.kiss {
+/* جوه الحصالة */
+.kisses-container {
     position: absolute;
-    font-size: 28px;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+}
+
+/* 💋 */
+.kiss {
+    font-size: 22px;
+    animation: popIn 0.4s ease;
+}
+
+@keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
+/* بوسة متحركة */
+.flying {
+    position: absolute;
+    font-size: 26px;
     left: 50%;
     transform: translateX(-50%);
-    top: -30px;
-    opacity: 0;
+    top: -35px;
+    z-index: 10;
 }
 
-/* دخول */
-.deposit {
-    animation: drop 0.9s ease forwards;
+.drop {
+    animation: drop 0.8s forwards;
+}
+
+.up {
+    animation: up 0.8s forwards;
 }
 
 @keyframes drop {
-    0% { top: -30px; opacity: 1; }
-    70% { top: 60px; opacity: 1; }
-    100% { top: 80px; opacity: 0; }
-}
-
-/* خروج */
-.withdraw {
-    animation: up 0.9s ease forwards;
+    0% { top: -35px; opacity: 1; }
+    70% { top: 80px; opacity: 1; }
+    100% { top: 120px; opacity: 0; }
 }
 
 @keyframes up {
-    0% { top: 80px; opacity: 1; }
+    0% { top: 120px; opacity: 1; }
     70% { top: 10px; opacity: 1; }
-    100% { top: -30px; opacity: 0; }
+    100% { top: -35px; opacity: 0; }
 }
 
 .name {
@@ -141,10 +166,11 @@ button {
 <!-- وزتي -->
 <div class="card">
     <div class="bank-wrapper">
-        <div class="kiss" id="kiss-wzty">💋</div>
+        <div class="flying" id="fly-wzty">💋</div>
         <div class="bank">
             <div class="bank-slot"></div>
             <div class="owner">🦢</div>
+            <div class="kisses-container" id="box-wzty"></div>
         </div>
     </div>
     <div class="name">وزتي</div>
@@ -156,10 +182,11 @@ button {
 <!-- سعدوتي -->
 <div class="card">
     <div class="bank-wrapper">
-        <div class="kiss" id="kiss-sadoty">💋</div>
+        <div class="flying" id="fly-sadoty">💋</div>
         <div class="bank">
             <div class="bank-slot"></div>
             <div class="owner">🦁</div>
+            <div class="kisses-container" id="box-sadoty"></div>
         </div>
     </div>
     <div class="name">سعدوتي</div>
@@ -184,23 +211,34 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+/* تحديث العرض */
 db.ref("counts").on("value", s => {
     const d = s.val() || {};
-    wztyCount.innerText = d.wzty || 0;
-    sadotyCount.innerText = d.sadoty || 0;
+    render("wzty", d.wzty || 0);
+    render("sadoty", d.sadoty || 0);
 });
 
+function render(person, count) {
+    document.getElementById(person + "Count").innerText = count;
+    const box = document.getElementById("box-" + person);
+    box.innerHTML = "";
+    for (let i = 0; i < count; i++) {
+        box.innerHTML += "<div class='kiss'>💋</div>";
+    }
+}
+
+/* تحديث القيمة */
 function update(person, val) {
-    const kiss = document.getElementById("kiss-" + person);
+    const fly = document.getElementById("fly-" + person);
 
     db.ref("counts/" + person).transaction(c => {
         c = c || 0;
         return Math.max(0, c + val);
     });
 
-    kiss.className = "kiss " + (val > 0 ? "deposit" : "withdraw");
-    kiss.style.opacity = 1;
-    setTimeout(() => kiss.className = "kiss", 900);
+    fly.className = "flying " + (val > 0 ? "drop" : "up");
+    fly.style.opacity = 1;
+    setTimeout(() => fly.className = "flying", 900);
 }
 </script>
 
