@@ -3,167 +3,180 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>حصالات البوس المشتركة 💌</title>
+<title>حصالات البوس 💗</title>
 
-<!-- Firebase v8 -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 
 body {
     font-family: Cairo, sans-serif;
-    background: linear-gradient(#fff, #ffe6ee);
+    background: linear-gradient(180deg,#fff,#ffe6ee);
     text-align: center;
     padding: 20px;
+    transition: background .4s;
 }
 
-h1 {
-    color: #d81b60;
-}
+h1 { color:#d81b60; }
 
 .container {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    flex-wrap: wrap;
-    margin-top: 30px;
+    display:flex;
+    justify-content:center;
+    gap:40px;
+    flex-wrap:wrap;
+    margin-top:40px;
 }
 
 .card {
-    background: white;
-    border-radius: 30px;
-    padding: 25px;
-    width: 280px;
-    box-shadow: 0 15px 30px rgba(0,0,0,.12);
+    background:white;
+    border-radius:30px;
+    padding:25px;
+    width:300px;
+    box-shadow:0 20px 40px rgba(0,0,0,.15);
 }
 
 /* ===== الحصالة ===== */
 .bank-wrapper {
-    position: relative;
-    height: 240px;
+    position:relative;
+    height:260px;
 }
 
 .bank {
-    width: 170px;
-    height: 150px;
-    background: linear-gradient(145deg, #ffd6e5, #ffb6d0);
-    border-radius: 70px 70px 55px 55px;
-    margin: 50px auto 0;
-    position: relative;
-    overflow: hidden;
-    border: 4px solid #ff9ab5;
+    width:200px;
+    height:170px;
+    margin:50px auto 0;
+    border-radius:90px 90px 60px 60px;
+    background:linear-gradient(145deg,#ffd6e5,#ff9ec2);
+    box-shadow:
+        inset 0 8px 15px rgba(255,255,255,.6),
+        inset 0 -10px 20px rgba(0,0,0,.1),
+        0 20px 30px rgba(0,0,0,.15);
+    position:relative;
+    overflow:hidden;
 }
 
 /* فتحة */
 .bank-slot {
-    width: 60px;
-    height: 8px;
-    background: #555;
-    border-radius: 4px;
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 5;
+    position:absolute;
+    top:-14px;
+    left:50%;
+    transform:translateX(-50%);
+    width:70px;
+    height:10px;
+    background:#444;
+    border-radius:6px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,.4);
 }
 
-/* إيموجي الشخص */
+/* الإيموجي محفور */
 .owner {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 42px;
-    z-index: 6;
+    position:absolute;
+    top:18px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:42px;
+    opacity:.85;
 }
 
-/* البوسات جوه الحصالة */
+/* البوسات جوه */
 .kisses {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
+    position:absolute;
+    inset:40px 15px 15px 15px;
 }
 
 .kiss {
-    font-size: 22px;
-    animation: pop 0.3s ease;
+    position:absolute;
+    font-size:22px;
+    animation:pop .3s ease;
 }
 
 @keyframes pop {
-    from { transform: scale(0); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+    from {transform:scale(0);opacity:0}
+    to {transform:scale(1);opacity:1}
 }
 
 /* بوسة متحركة */
-.flying {
-    position: absolute;
-    font-size: 28px;
-    left: 50%;
-    transform: translateX(-50%);
-    top: -40px;
-    opacity: 0;
-    z-index: 10;
+.fly {
+    position:absolute;
+    font-size:28px;
+    left:50%;
+    transform:translateX(-50%);
+    top:-40px;
+    z-index:10;
+    opacity:0;
 }
 
-.drop { animation: drop 0.8s forwards; }
-.up { animation: up 0.8s forwards; }
+.drop { animation:drop .9s forwards }
+.up { animation:up .9s forwards }
 
 @keyframes drop {
-    0% { top: -40px; opacity: 1; }
-    70% { top: 70px; opacity: 1; }
-    100% { top: 110px; opacity: 0; }
+    0%{top:-40px;opacity:1}
+    70%{top:90px;opacity:1}
+    100%{top:130px;opacity:0}
 }
-
 @keyframes up {
-    0% { top: 110px; opacity: 1; }
-    70% { top: 10px; opacity: 1; }
-    100% { top: -40px; opacity: 0; }
+    0%{top:130px;opacity:1}
+    70%{top:10px;opacity:1}
+    100%{top:-40px;opacity:0}
 }
 
-.name {
-    font-size: 22px;
-    font-weight: bold;
-    margin-top: 10px;
-}
-
-.count {
-    font-size: 40px;
-    color: #ff4081;
-}
+/* باقي */
+.name {font-size:22px;font-weight:bold}
+.count {font-size:40px;color:#ff4081}
 
 button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 8px;
-    border: none;
-    border-radius: 15px;
-    font-size: 16px;
-    font-family: Cairo;
-    color: white;
-    cursor: pointer;
+    width:100%;
+    padding:12px;
+    margin-top:8px;
+    border:none;
+    border-radius:15px;
+    font-size:16px;
+    color:white;
+    cursor:pointer;
 }
 
-.plus { background: #4caf50; }
-.minus { background: #f44336; }
+.plus{background:#4caf50}
+.minus{background:#f44336}
+
+/* اهتزاز */
+@keyframes shake {
+    0%,100%{transform:translateX(0)}
+    25%{transform:translateX(-8px)}
+    50%{transform:translateX(8px)}
+}
+.shake{animation:shake .4s}
+
+/* خلفية */
+#bg {
+    position:fixed;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:260px;
+    opacity:0;
+    pointer-events:none;
+    transition:.4s;
+}
+.show{opacity:.25}
 </style>
 </head>
 
 <body>
+
+<div id="bg">💋</div>
 
 <h1>💗 حصالات البوس المشتركة</h1>
 
 <div class="container">
 
 <!-- وزتي -->
-<div class="card">
+<div class="card" id="card-wzty">
     <div class="bank-wrapper">
-        <div class="flying" id="fly-wzty">💋</div>
+        <div class="fly" id="fly-wzty">💋</div>
         <div class="bank">
             <div class="bank-slot"></div>
             <div class="owner">🦢</div>
@@ -177,9 +190,9 @@ button {
 </div>
 
 <!-- سعدوتي -->
-<div class="card">
+<div class="card" id="card-sadoty">
     <div class="bank-wrapper">
-        <div class="flying" id="fly-sadoty">💋</div>
+        <div class="fly" id="fly-sadoty">💋</div>
         <div class="bank">
             <div class="bank-slot"></div>
             <div class="owner">🦁</div>
@@ -196,45 +209,60 @@ button {
 
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyBcowW6D82xeisiKInkElpjVj53m0SuW1g",
-  authDomain: "bosaat-e2b8a.firebaseapp.com",
-  databaseURL: "https://bosaat-e2b8a-default-rtdb.firebaseio.com",
-  projectId: "bosaat-e2b8a",
-  storageBucket: "bosaat-e2b8a.appspot.com",
-  messagingSenderId: "313109054443",
-  appId: "1:313109054443:web:bb6d523b8e9a9595810fae"
+  apiKey:"AIzaSyBcowW6D82xeisiKInkElpjVj53m0SuW1g",
+  authDomain:"bosaat-e2b8a.firebaseapp.com",
+  databaseURL:"https://bosaat-e2b8a-default-rtdb.firebaseio.com",
+  projectId:"bosaat-e2b8a",
+  storageBucket:"bosaat-e2b8a.appspot.com",
+  messagingSenderId:"313109054443",
+  appId:"1:313109054443:web:bb6d523b8e9a9595810fae"
 };
-
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+const db=firebase.database();
 
-/* عرض البوسات */
-db.ref("counts").on("value", snap => {
-    const d = snap.val() || {};
-    render("wzty", d.wzty || 0);
-    render("sadoty", d.sadoty || 0);
+db.ref("counts").on("value",s=>{
+ const d=s.val()||{};
+ render("wzty",d.wzty||0);
+ render("sadoty",d.sadoty||0);
 });
 
-function render(person, count) {
-    document.getElementById(person + "Count").innerText = count;
-    const box = document.getElementById("box-" + person);
-    box.innerHTML = "";
-    for (let i = 0; i < count; i++) {
-        box.innerHTML += "<div class='kiss'>💋</div>";
-    }
+function render(p,c){
+ document.getElementById(p+"Count").innerText=c;
+ const box=document.getElementById("box-"+p);
+ box.innerHTML="";
+ for(let i=0;i<c;i++){
+   const k=document.createElement("div");
+   k.className="kiss";
+   k.textContent="💋";
+   k.style.left=Math.random()*80+"%";
+   k.style.top=Math.random()*80+"%";
+   box.appendChild(k);
+ }
 }
 
-function update(person, val) {
-    const fly = document.getElementById("fly-" + person);
+function update(p,v){
+ const fly=document.getElementById("fly-"+p);
+ const card=document.getElementById("card-"+p);
+ const bg=document.getElementById("bg");
 
-    db.ref("counts/" + person).transaction(c => {
-        c = c || 0;
-        return Math.max(0, c + val);
-    });
+ db.ref("counts/"+p).transaction(c=>Math.max(0,(c||0)+v));
 
-    fly.className = "flying " + (val > 0 ? "drop" : "up");
-    fly.style.opacity = 1;
-    setTimeout(() => fly.className = "flying", 900);
+ fly.className="fly "+(v>0?"drop":"up");
+ fly.style.opacity=1;
+ setTimeout(()=>fly.className="fly",900);
+
+ if(v>0){
+   confetti({particleCount:120,spread:80});
+   bg.textContent="💋";
+   bg.classList.add("show");
+ }else{
+   card.classList.add("shake");
+   bg.textContent="😢";
+   bg.classList.add("show");
+   setTimeout(()=>card.classList.remove("shake"),400);
+ }
+
+ setTimeout(()=>bg.classList.remove("show"),800);
 }
 </script>
 
