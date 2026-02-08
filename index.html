@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حصالات البوس المشتركة 💌</title>
+
+<!-- Firebase v8 -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<!-- Confetti -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
+body {
+    font-family: 'Cairo', sans-serif;
+    background: #f8f9fa;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    transition: background 0.4s;
+}
+
+h1 {
+    color: #d81b60;
+    margin-bottom: 30px;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.piggy-card {
+    background: white;
+    border-radius: 30px;
+    padding: 30px;
+    width: 250px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.envelope-icon {
+    font-size: 80px;
+}
+
+.name {
+    font-size: 24px;
+    font-weight: bold;
+    color: #555;
+}
+
+.count {
+    font-size: 45px;
+    font-weight: bold;
+    color: #ff4081;
+    margin: 15px 0;
+    background: #fff0f5;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+button {
+    border: none;
+    padding: 15px;
+    border-radius: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Cairo';
+    color: white;
+    font-size: 16px;
+}
+
+.btn-plus {
+    background-color: #4caf50;
+}
+
+.btn-minus {
+    background-color: #f44336;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    50% { transform: translateX(8px); }
+    75% { transform: translateX(-8px); }
+    100% { transform: translateX(0); }
+}
+
+.shake {
+    animation: shake 0.4s;
+}
+
+#bg-emoji {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 300px;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.4s;
+}
+
+.show {
+    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(1.4);
+}
+
+#history {
+    margin-top: 40px;
+    font-size: 14px;
+    color: #777;
+    background: #fff;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 15px;
+    border-radius: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="bg-emoji">💋</div>
+
+<h1>💗 حصالات البوس المشتركة 💌</h1>
+
+<div class="container">
+
+    <div class="piggy-card" id="card-wzty">
+        <div class="envelope-icon">🦢</div>
+        <div class="name">وزتي</div>
+        <div class="count" id="wztyCount">0</div>
+        <div class="buttons">
+            <button class="btn-plus" onclick="updateCount('wzty', 1)">إيداع بوسة 💋</button>
+            <button class="btn-minus" onclick="updateCount('wzty', -1)">سحب بوسة 😠</button>
+        </div>
+    </div>
+
+    <div class="piggy-card" id="card-sadoty">
+        <div class="envelope-icon">🦁</div>
+        <div class="name">سعدوتي</div>
+        <div class="count" id="sadotyCount">0</div>
+        <div class="buttons">
+            <button class="btn-plus" onclick="updateCount('sadoty', 1)">إيداع بوسة 💋</button>
+            <button class="btn-minus" onclick="updateCount('sadoty', -1)">سحب بوسة 😠</button>
+        </div>
+    </div>
+
+</div>
+
+<div id="history">آخر حركة: ابدأوا بجمع البوس 💖</div>
+
+<audio id="popSound" src="https://www.soundjay.com/buttons/sounds/button-37.mp3"></audio>
+<audio id="errorSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+
+<script>
+/* Firebase Config */
+const firebaseConfig = {
+  apiKey: "AIzaSyBcowW6D82xeisiKInkElpjVj53m0SuW1g",
+  authDomain: "bosaat-e2b8a.firebaseapp.com",
+  databaseURL: "https://bosaat-e2b8a-default-rtdb.firebaseio.com",
+  projectId: "bosaat-e2b8a",
+  storageBucket: "bosaat-e2b8a.appspot.com",
+  messagingSenderId: "313109054443",
+  appId: "1:313109054443:web:bb6d523b8e9a9595810fae"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+/* Listen for changes */
+db.ref("counts").on("value", snapshot => {
+    const data = snapshot.val() || {};
+    document.getElementById("wztyCount").innerText = data.wzty || 0;
+    document.getElementById("sadotyCount").innerText = data.sadoty || 0;
+});
+
+/* Update count */
+function updateCount(person, val) {
+    const card = document.getElementById("card-" + person);
+    const history = document.getElementById("history");
+    const name = person === "wzty" ? "وزتي" : "سعدوتي";
+
+    db.ref("counts/" + person).transaction(current => {
+        current = current || 0;
+        const next = current + val;
+        return next < 0 ? 0 : next;
+    });
+
+    if (val > 0) {
+        document.getElementById("popSound").play();
+        confetti({ particleCount: 80, spread: 70 });
+        history.innerText = `آخر حركة: إيداع بوسة لـ ${name} 🥰`;
+        showBg("💋", "#c8e6c9");
+    } else {
+        document.getElementById("errorSound").play();
+        card.classList.add("shake");
+        setTimeout(() => card.classList.remove("shake"), 400);
+        history.innerText = `آخر حركة: سحب بوسة من ${name} 😠`;
+        showBg("😠", "#ffcdd2");
+    }
+}
+
+/* Background effect */
+function showBg(emoji, color) {
+    const bg = document.getElementById("bg-emoji");
+    bg.innerText = emoji;
+    bg.classList.add("show");
+    document.body.style.background = color;
+
+    setTimeout(() => {
+        bg.classList.remove("show");
+        document.body.style.background = "#f8f9fa";
+    }, 800);
+}
+</script>
+
+</body>
+</html>
