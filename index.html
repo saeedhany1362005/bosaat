@@ -3,201 +3,184 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>حصالات البوس 💗</title>
+<title>حصالات البوس المشتركة 💌</title>
 
+<!-- Firebase v8 -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<!-- Confetti -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 
 body {
-    font-family: Cairo, sans-serif;
-    background: linear-gradient(#fff, #ffe6ee);
+    font-family: 'Cairo', sans-serif;
+    background: #f8f9fa;
     text-align: center;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    transition: background 0.4s;
 }
 
 h1 {
     color: #d81b60;
-    margin-top: 30px;
+    margin-bottom: 30px;
 }
 
 .container {
     display: flex;
     justify-content: center;
-    gap: 40px;
-    margin-top: 40px;
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
-.card {
+.piggy-card {
     background: white;
     border-radius: 30px;
-    padding: 25px;
-    width: 280px;
-    box-shadow: 0 15px 30px rgba(0,0,0,.12);
+    padding: 30px;
+    width: 260px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 
-/* ===== الحصالة ===== */
-.bank-wrapper {
-    position: relative;
-    height: 240px;
+.piggy {
+    font-size: 90px;
+    line-height: 1;
 }
 
-.bank {
-    width: 180px;
-    height: 160px;
-    background: #ffd1dc;
-    border-radius: 70px 70px 55px 55px;
-    margin: 40px auto 0;
-    position: relative;
-    overflow: hidden;
-    border: 4px solid #ff9ab5;
-}
-
-/* فتحة */
-.bank-slot {
-    width: 60px;
-    height: 8px;
-    background: #444;
-    border-radius: 4px;
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 5;
-}
-
-/* إيموجي الشخص */
-.owner {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 40px;
-    z-index: 6;
-}
-
-/* جوه الحصالة */
-.kisses-container {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
-}
-
-/* 💋 */
-.kiss {
-    font-size: 22px;
-    animation: popIn 0.4s ease;
-}
-
-@keyframes popIn {
-    from { transform: scale(0); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
-}
-
-/* بوسة متحركة */
-.flying {
-    position: absolute;
-    font-size: 26px;
-    left: 50%;
-    transform: translateX(-50%);
-    top: -35px;
-    z-index: 10;
-}
-
-.drop {
-    animation: drop 0.8s forwards;
-}
-
-.up {
-    animation: up 0.8s forwards;
-}
-
-@keyframes drop {
-    0% { top: -35px; opacity: 1; }
-    70% { top: 80px; opacity: 1; }
-    100% { top: 120px; opacity: 0; }
-}
-
-@keyframes up {
-    0% { top: 120px; opacity: 1; }
-    70% { top: 10px; opacity: 1; }
-    100% { top: -35px; opacity: 0; }
+.person-emoji {
+    font-size: 34px;
+    margin-top: -25px;
 }
 
 .name {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: bold;
+    color: #555;
     margin-top: 10px;
 }
 
 .count {
-    font-size: 40px;
+    font-size: 45px;
+    font-weight: bold;
     color: #ff4081;
+    margin: 15px 0;
+    background: #fff0f5;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 8px;
     border: none;
+    padding: 15px;
     border-radius: 15px;
-    font-size: 16px;
-    font-family: Cairo;
-    color: white;
+    font-weight: bold;
     cursor: pointer;
+    font-family: 'Cairo';
+    color: white;
+    font-size: 16px;
 }
 
-.plus { background: #4caf50; }
-.minus { background: #f44336; }
+.btn-plus {
+    background-color: #4caf50;
+}
+
+.btn-minus {
+    background-color: #f44336;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    50% { transform: translateX(8px); }
+    75% { transform: translateX(-8px); }
+    100% { transform: translateX(0); }
+}
+
+.shake {
+    animation: shake 0.4s;
+}
+
+#bg-emoji {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 300px;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.4s;
+}
+
+.show {
+    opacity: 0.25;
+    transform: translate(-50%, -50%) scale(1.4);
+}
+
+#history {
+    margin-top: 40px;
+    font-size: 14px;
+    color: #777;
+    background: #fff;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 15px;
+    border-radius: 15px;
+}
 </style>
 </head>
 
 <body>
 
-<h1>💗 حصالات البوس المشتركة</h1>
+<div id="bg-emoji">💋</div>
+
+<h1>💗 حصالات البوس المشتركة 💌</h1>
 
 <div class="container">
 
-<!-- وزتي -->
-<div class="card">
-    <div class="bank-wrapper">
-        <div class="flying" id="fly-wzty">💋</div>
-        <div class="bank">
-            <div class="bank-slot"></div>
-            <div class="owner">🦢</div>
-            <div class="kisses-container" id="box-wzty"></div>
+    <!-- وزتي -->
+    <div class="piggy-card" id="card-wzty">
+        <div class="piggy">🐷</div>
+        <div class="person-emoji">🎀</div>
+        <div class="name">وزتي</div>
+        <div class="count" id="wztyCount">0</div>
+        <div class="buttons">
+            <button class="btn-plus" onclick="updateCount('wzty', 1)">إيداع بوسة 💋</button>
+            <button class="btn-minus" onclick="updateCount('wzty', -1)">سحب بوسة 😢</button>
         </div>
     </div>
-    <div class="name">وزتي</div>
-    <div class="count" id="wztyCount">0</div>
-    <button class="plus" onclick="update('wzty',1)">إيداع بوسة 💋</button>
-    <button class="minus" onclick="update('wzty',-1)">سحب بوسة 😢</button>
-</div>
 
-<!-- سعدوتي -->
-<div class="card">
-    <div class="bank-wrapper">
-        <div class="flying" id="fly-sadoty">💋</div>
-        <div class="bank">
-            <div class="bank-slot"></div>
-            <div class="owner">🦁</div>
-            <div class="kisses-container" id="box-sadoty"></div>
+    <!-- سعدوتي -->
+    <div class="piggy-card" id="card-sadoty">
+        <div class="piggy">🐷</div>
+        <div class="person-emoji">🧢</div>
+        <div class="name">سعدوتي</div>
+        <div class="count" id="sadotyCount">0</div>
+        <div class="buttons">
+            <button class="btn-plus" onclick="updateCount('sadoty', 1)">إيداع بوسة 💋</button>
+            <button class="btn-minus" onclick="updateCount('sadoty', -1)">سحب بوسة 😢</button>
         </div>
     </div>
-    <div class="name">سعدوتي</div>
-    <div class="count" id="sadotyCount">0</div>
-    <button class="plus" onclick="update('sadoty',1)">إيداع بوسة 💋</button>
-    <button class="minus" onclick="update('sadoty',-1)">سحب بوسة 😢</button>
-</div>
 
 </div>
+
+<div id="history">آخر حركة: ابدأوا بجمع البوس 💖</div>
+
+<!-- الأصوات -->
+<audio id="popSound" src="https://www.soundjay.com/buttons/sounds/button-37.mp3"></audio>
+<audio id="errorSound" src="https://www.soundjay.com/human/sounds/sigh-01.mp3"></audio>
 
 <script>
+/* Firebase Config */
 const firebaseConfig = {
   apiKey: "AIzaSyBcowW6D82xeisiKInkElpjVj53m0SuW1g",
   authDomain: "bosaat-e2b8a.firebaseapp.com",
@@ -211,34 +194,54 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-/* تحديث العرض */
-db.ref("counts").on("value", s => {
-    const d = s.val() || {};
-    render("wzty", d.wzty || 0);
-    render("sadoty", d.sadoty || 0);
+/* Listen for realtime updates */
+db.ref("counts").on("value", snapshot => {
+    const data = snapshot.val() || {};
+    document.getElementById("wztyCount").innerText = data.wzty || 0;
+    document.getElementById("sadotyCount").innerText = data.sadoty || 0;
 });
 
-function render(person, count) {
-    document.getElementById(person + "Count").innerText = count;
-    const box = document.getElementById("box-" + person);
-    box.innerHTML = "";
-    for (let i = 0; i < count; i++) {
-        box.innerHTML += "<div class='kiss'>💋</div>";
+/* Update count */
+function updateCount(person, val) {
+    const card = document.getElementById("card-" + person);
+    const history = document.getElementById("history");
+    const name = person === "wzty" ? "وزتي" : "سعدوتي";
+
+    db.ref("counts/" + person).transaction(current => {
+        current = current || 0;
+        const next = current + val;
+        return next < 0 ? 0 : next;
+    });
+
+    if (val > 0) {
+        document.getElementById("popSound").play();
+        confetti({ particleCount: 80, spread: 70 });
+        history.innerText = `آخر حركة: إيداع بوسة لـ ${name} 🥰`;
+        showBg("💋", "#c8e6c9");
+    } else {
+        const sadSound = document.getElementById("errorSound");
+        sadSound.volume = 0.4;
+        sadSound.play();
+
+        card.classList.add("shake");
+        setTimeout(() => card.classList.remove("shake"), 400);
+
+        history.innerText = `آخر حركة: سحب بوسة من ${name} 😔`;
+        showBg("😢", "#ffcdd2");
     }
 }
 
-/* تحديث القيمة */
-function update(person, val) {
-    const fly = document.getElementById("fly-" + person);
+/* Background effect */
+function showBg(emoji, color) {
+    const bg = document.getElementById("bg-emoji");
+    bg.innerText = emoji;
+    bg.classList.add("show");
+    document.body.style.background = color;
 
-    db.ref("counts/" + person).transaction(c => {
-        c = c || 0;
-        return Math.max(0, c + val);
-    });
-
-    fly.className = "flying " + (val > 0 ? "drop" : "up");
-    fly.style.opacity = 1;
-    setTimeout(() => fly.className = "flying", 900);
+    setTimeout(() => {
+        bg.classList.remove("show");
+        document.body.style.background = "#f8f9fa";
+    }, 800);
 }
 </script>
 
