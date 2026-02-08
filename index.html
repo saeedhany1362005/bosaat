@@ -41,18 +41,25 @@ h1 {
     background: white;
     border-radius: 30px;
     padding: 30px;
-    width: 250px;
+    width: 260px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
 
-.envelope-icon {
-    font-size: 80px;
+.piggy {
+    font-size: 90px;
+    line-height: 1;
+}
+
+.person-emoji {
+    font-size: 34px;
+    margin-top: -25px;
 }
 
 .name {
     font-size: 24px;
     font-weight: bold;
     color: #555;
+    margin-top: 10px;
 }
 
 .count {
@@ -114,7 +121,7 @@ button {
 }
 
 .show {
-    opacity: 0.3;
+    opacity: 0.25;
     transform: translate(-50%, -50%) scale(1.4);
 }
 
@@ -123,7 +130,7 @@ button {
     font-size: 14px;
     color: #777;
     background: #fff;
-    max-width: 400px;
+    max-width: 420px;
     margin-left: auto;
     margin-right: auto;
     padding: 15px;
@@ -140,23 +147,27 @@ button {
 
 <div class="container">
 
+    <!-- وزتي -->
     <div class="piggy-card" id="card-wzty">
-        <div class="envelope-icon">🦢</div>
+        <div class="piggy">🐷</div>
+        <div class="person-emoji">🎀</div>
         <div class="name">وزتي</div>
         <div class="count" id="wztyCount">0</div>
         <div class="buttons">
             <button class="btn-plus" onclick="updateCount('wzty', 1)">إيداع بوسة 💋</button>
-            <button class="btn-minus" onclick="updateCount('wzty', -1)">سحب بوسة 😠</button>
+            <button class="btn-minus" onclick="updateCount('wzty', -1)">سحب بوسة 😢</button>
         </div>
     </div>
 
+    <!-- سعدوتي -->
     <div class="piggy-card" id="card-sadoty">
-        <div class="envelope-icon">🦁</div>
+        <div class="piggy">🐷</div>
+        <div class="person-emoji">🧢</div>
         <div class="name">سعدوتي</div>
         <div class="count" id="sadotyCount">0</div>
         <div class="buttons">
             <button class="btn-plus" onclick="updateCount('sadoty', 1)">إيداع بوسة 💋</button>
-            <button class="btn-minus" onclick="updateCount('sadoty', -1)">سحب بوسة 😠</button>
+            <button class="btn-minus" onclick="updateCount('sadoty', -1)">سحب بوسة 😢</button>
         </div>
     </div>
 
@@ -164,8 +175,9 @@ button {
 
 <div id="history">آخر حركة: ابدأوا بجمع البوس 💖</div>
 
+<!-- الأصوات -->
 <audio id="popSound" src="https://www.soundjay.com/buttons/sounds/button-37.mp3"></audio>
-<audio id="errorSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+<audio id="errorSound" src="https://www.soundjay.com/human/sounds/sigh-01.mp3"></audio>
 
 <script>
 /* Firebase Config */
@@ -182,7 +194,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-/* Listen for changes */
+/* Listen for realtime updates */
 db.ref("counts").on("value", snapshot => {
     const data = snapshot.val() || {};
     document.getElementById("wztyCount").innerText = data.wzty || 0;
@@ -207,11 +219,15 @@ function updateCount(person, val) {
         history.innerText = `آخر حركة: إيداع بوسة لـ ${name} 🥰`;
         showBg("💋", "#c8e6c9");
     } else {
-        document.getElementById("errorSound").play();
+        const sadSound = document.getElementById("errorSound");
+        sadSound.volume = 0.4;
+        sadSound.play();
+
         card.classList.add("shake");
         setTimeout(() => card.classList.remove("shake"), 400);
-        history.innerText = `آخر حركة: سحب بوسة من ${name} 😠`;
-        showBg("😠", "#ffcdd2");
+
+        history.innerText = `آخر حركة: سحب بوسة من ${name} 😔`;
+        showBg("😢", "#ffcdd2");
     }
 }
 
